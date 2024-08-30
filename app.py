@@ -6,29 +6,22 @@ from data_processing import process_news
 api_key = "9eb39a7fe7c94564995d4988bca51040"
 query = "hidrogênio verde"
 
-# Títulos dos temas
-themes = {
-    "Geral": "hidrogênio verde",
-    "Tecnologia": "hidrogênio verde tecnologia",
-    "Economia": "hidrogênio verde economia",
-    "Política": "hidrogênio verde política",
-    "Ambiente": "hidrogênio verde ambiente"
-}
-
-# Menu de seleção de temas
-selected_theme = st.selectbox("Escolha um tema:", list(themes.keys()))
-
-# Atualiza a consulta com base no tema selecionado
-theme_query = themes[selected_theme]
-
 # Título do dashboard
-st.title(f"Notícias sobre {selected_theme}")
+st.title("Notícias sobre Hidrogênio Verde")
+
+# Campo de pesquisa
+search_query = st.text_input("Pesquisar notícias:", "")
 
 # Coleta de notícias
-data = get_news(api_key, theme_query)
+data = get_news(api_key, query)
 
 # Processamento de notícias
 news = process_news(data)
+
+# Filtro por pesquisa
+if search_query:
+    news = news[news["title"].str.contains(search_query, case=False, na=False) |
+                news["description"].str.contains(search_query, case=False, na=False)]
 
 # Ordena as notícias por data de publicação em ordem decrescente
 news = news.sort_values(by='publishedAt', ascending=False)
@@ -143,26 +136,6 @@ for index, row in news.iterrows():
     </div>
     """, unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
-
-# Filtro por palavra-chave
-st.write("Filtro por palavra-chave:")
-keyword = st.text_input("Digite uma palavra-chave:")
-if keyword:
-    filtered_news = news[news["title"].str.contains(keyword, case=False)]
-    st.write("Notícias filtradas:")
-    st.markdown('<div class="news-grid">', unsafe_allow_html=True)
-    for index, row in filtered_news.iterrows():
-        st.markdown(f"""
-        <div class="news-container">
-            <img src="{row['urlToImage']}" class="news-image">
-            <div class="news-title"><a href="{row['url']}" target="_blank">{row['title']}</a></div>
-            <div class="news-date">Data: {row['publishedAt'].strftime('%d/%m/%Y')}</div>
-            <div class="news-description">{row['description']}</div>
-            <div class="news-summary">Resumo: {row['summary'] if 'summary' in row else 'Nenhum resumo disponível.'}</div>
-            <a href="{row['url']}" class="read-more" target="_blank">Leia mais</a>
-        </div>
-        """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Filtro por data
 st.write("Filtro por data:")
