@@ -6,11 +6,26 @@ from data_processing import process_news
 api_key = "9eb39a7fe7c94564995d4988bca51040"
 query = "hidrogênio verde"
 
+# Títulos dos temas
+themes = {
+    "Geral": "hidrogênio verde",
+    "Tecnologia": "hidrogênio verde tecnologia",
+    "Economia": "hidrogênio verde economia",
+    "Política": "hidrogênio verde política",
+    "Ambiente": "hidrogênio verde ambiente"
+}
+
+# Menu de seleção de temas
+selected_theme = st.selectbox("Escolha um tema:", list(themes.keys()))
+
+# Atualiza a consulta com base no tema selecionado
+theme_query = themes[selected_theme]
+
 # Título do dashboard
-st.title("Notícias sobre Hidrogênio Verde")
+st.title(f"Notícias sobre {selected_theme}")
 
 # Coleta de notícias
-data = get_news(api_key, query)
+data = get_news(api_key, theme_query)
 
 # Processamento de notícias
 news = process_news(data)
@@ -36,9 +51,10 @@ st.markdown(
         border: 1px solid #e1e1e1;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s ease-in-out;
-        width: 500px; /* Largura fixa */
-        height: 600px; /* Altura fixa */
-        overflow: hidden; /* Garante que o conteúdo que excede a altura seja escondido */
+        width: 100%; /* Largura ajustável */
+        max-width: 500px; /* Largura máxima */
+        height: auto; /* Altura ajustável */
+        overflow: hidden;
         display: flex;
         flex-direction: column;
     }
@@ -67,22 +83,22 @@ st.markdown(
         font-size: 12px;
         color: #555;
         margin: 5px 0;
-        overflow: hidden; /* Garante que o texto que excede o container seja escondido */
-        text-overflow: ellipsis; /* Adiciona reticências ao texto que não cabe no container */
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .news-summary {
         font-size: 12px;
         color: #444;
         font-style: italic;
         margin: 5px 0;
-        overflow: hidden; /* Garante que o texto que excede o container seja escondido */
-        text-overflow: ellipsis; /* Adiciona reticências ao texto que não cabe no container */
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .news-image {
         border-radius: 8px;
         width: 100%;
-        height: 350px; /* Altura fixa para a imagem */
-        object-fit: cover; /* Ajusta a imagem para preencher o container */
+        height: auto; /* Altura ajustável */
+        object-fit: cover;
         margin-bottom: 10px;
     }
     .read-more {
@@ -97,8 +113,16 @@ st.markdown(
     .news-grid {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px; /* Espaço entre os containers */
-        justify-content: space-between; /* Espaça as notícias igualmente */
+        gap: 10px;
+        justify-content: center; /* Centraliza os itens */
+    }
+    @media (max-width: 600px) {
+        .news-title {
+            font-size: 14px;
+        }
+        .news-date, .news-description, .news-summary, .read-more {
+            font-size: 10px;
+        }
     }
     </style>
     """,
